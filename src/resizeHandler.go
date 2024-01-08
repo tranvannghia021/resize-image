@@ -7,11 +7,11 @@ import (
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/disintegration/imaging"
 	"github.com/h2non/bimg"
+	"github.com/tranvannghia021/resize-image/configs"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
-	"resize-image/configs"
 	"strconv"
 	"strings"
 )

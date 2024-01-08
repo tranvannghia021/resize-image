@@ -5,9 +5,9 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/hertz-contrib/cors"
+	"github.com/tranvannghia021/resize-image/configs"
+	"github.com/tranvannghia021/resize-image/src"
 	"log"
-	"resize-image/configs"
-	"resize-image/src"
 	"time"
 )
 
