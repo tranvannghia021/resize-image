@@ -7,9 +7,11 @@ import (
 )
 
 var (
-	port   int
-	env    string
-	appUrl string
+	port     int
+	env      string
+	appUrl   string
+	mongoDns string
+	mongoDB  string
 )
 
 func GetPort() int {
@@ -30,9 +32,18 @@ func GetAppUrl() string {
 
 func GetAppEnv() string {
 	if env == "" {
+		loadEnv()
 		env = os.Getenv("APP_ENV")
 	}
 	return env
+}
+
+func GetMongoDns() string {
+	if mongoDns == "" {
+		loadEnv()
+		mongoDns = os.Getenv("MONGO_DNS")
+	}
+	return mongoDns
 }
 
 func loadEnv() {
@@ -42,6 +53,10 @@ func loadEnv() {
 	}
 }
 
-func GetConfigResize() (int, int) {
-	return 800, 600
+func GetMongoDB() string {
+	if mongoDB == "" {
+		loadEnv()
+		mongoDB = os.Getenv("MONGO_DB")
+	}
+	return mongoDB
 }

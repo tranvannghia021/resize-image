@@ -1,31 +1,36 @@
-package src
+package app
 
 import (
 	"context"
+	"fmt"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/common/utils"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
+	"github.com/tranvannghia021/resize"
+	"log"
+	"resize-image/configs"
 )
 
 type payloadResize struct {
-	image string `json:"image,required"`
+	Image string `json:"image,required"`
 }
 
 func ResizeHandler(ctx context.Context, r *app.RequestContext) {
-
-	image, ok := r.GetPostForm("image")
-	if !ok {
-		responseError(r, "image is required")
+	var imageS payloadResize
+	err := r.BindAndValidate(&imageS)
+	if err != nil {
+		responseError(r, "[validate] :"+err.Error())
 		return
 	}
 	// service image
-	service := NewResize(image)
+	service := resize.NewResize(imageS.Image)
 
 	// check re-size duplicate
 
 	isDuplicate, body, err := service.IsReSizeAgain()
 
 	if isDuplicate {
+		log.Println(err.Error())
 		responseError(r, "[property] :"+err.Error())
 		return
 	}
@@ -33,6 +38,7 @@ func ResizeHandler(ctx context.Context, r *app.RequestContext) {
 	result, err := service.ReSize(body)
 
 	if err != nil {
+		log.Println(err.Error())
 		responseError(r, "[re-size] :"+err.Error())
 		return
 	}
@@ -41,7 +47,7 @@ func ResizeHandler(ctx context.Context, r *app.RequestContext) {
 		"code":    consts.StatusOK,
 		"message": "",
 		"data": map[string]string{
-			"image": result,
+			"image": fmt.Sprintf("%s:%d/assets/%s", configs.GetAppUrl(), configs.GetPort(), result),
 		},
 	})
 }

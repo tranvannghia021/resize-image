@@ -1,4 +1,4 @@
-package src
+package resize
 
 import (
 	"bytes"
@@ -7,8 +7,8 @@ import (
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/disintegration/imaging"
 	"github.com/h2non/bimg"
-	"github.com/tranvannghia021/resize-image/configs"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -72,15 +72,18 @@ func (f *fileResize) fetch() (*CurrentImage, bool, error) {
 }
 
 func (f *fileResize) ReSize(data []byte) (string, error) {
-	newImage, err := bimg.NewImage(data).Resize(configs.GetConfigResize())
+	newImage, err := bimg.NewImage(data).Resize(getConfigResize())
 
 	if err != nil {
 		return "", err
 	}
 
 	fileName := strings.Split(filepath.Base(f.url), "?")[0]
-
-	path := fmt.Sprintf("./assets/%s", fileName)
+	p, err := os.Getwd()
+	if err != nil {
+		log.Println(err)
+	}
+	path := fmt.Sprintf("%s/assets/%s", p, fileName)
 	if err = createFile(path); err != nil {
 		return "", err
 	}
@@ -90,7 +93,7 @@ func (f *fileResize) ReSize(data []byte) (string, error) {
 		return "", err
 	}
 
-	return fmt.Sprintf("%s:%d/assets/%s", configs.GetAppUrl(), configs.GetPort(), fileName), nil
+	return fileName, nil
 }
 
 // this func create in cdn or do or s3
@@ -113,7 +116,7 @@ func (f *fileResize) IsReSizeAgain() (bool, []byte, error) {
 		return true, nil, err
 	}
 
-	width, height := configs.GetConfigResize()
+	width, height := getConfigResize()
 
 	if result.Height == height && result.Width == width {
 		return true, nil, errors.New("the image is resize")

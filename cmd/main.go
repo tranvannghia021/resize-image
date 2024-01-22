@@ -5,11 +5,26 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/hertz-contrib/cors"
-	"github.com/tranvannghia021/resize-image/configs"
-	"github.com/tranvannghia021/resize-image/src"
 	"log"
+	"os"
+	appHandler "resize-image/cmd/app"
+	"resize-image/configs"
 	"time"
 )
+
+func init() {
+	if configs.GetAppUrl() == "" || configs.GetPort() == 0 {
+		log.Fatal("env is required")
+	}
+
+	// log init
+
+	f, err := os.Create("log.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.SetOutput(f)
+}
 
 func main() {
 	// init server
@@ -40,7 +55,7 @@ func routes(h *server.Hertz) {
 
 	api := h.Group("api")
 	{
-		api.POST("image/re-size", src.ResizeHandler)
+		api.POST("image/re-size", appHandler.ResizeHandler)
 	}
 
 }
